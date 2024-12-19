@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Input from '../components/ui/input';
 import Button from '../components/ui/button';
 import Link from 'next/link';
@@ -10,7 +9,7 @@ export default function Register() {
     const [formData, setFormData] = useState({ email: '', username: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
-    const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -26,6 +25,10 @@ export default function Register() {
             return;
         }
 
+        setLoading(true); 
+        setIsError(false);
+        setResponseMessage('');
+
         try {
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -33,29 +36,27 @@ export default function Register() {
                 body: JSON.stringify(formData),
             });
 
-            const data = await res.json();
-            if (res.status !== 201) {
-                setIsError(true);
-
-                if (data.error === 'User already exists') {
-                    setResponseMessage('User already exists');
-                } else {
-                    setResponseMessage(data.error || 'An unexpected error occurred');
-                }
+            if (res.ok) {
+                window.location.href = '/login';
                 return;
             }
 
-            router.push('/login');
+            setIsError(true);
+            const data = await res.json();
+            setResponseMessage(data.error || 'An unexpected error occurred');
         } catch {
             setIsError(true);
             setResponseMessage('An unexpected error occurred');
+        } finally {
+            setLoading(false);
         }
     };
+
     return (
         <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
             <div className="w-full space-y-6 max-w-[336px]">
                 <div className="text-center">
-                    <p className='text-2xl font-bold'>Register</p>
+                    <p className="text-2xl font-bold">Register</p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
@@ -91,8 +92,15 @@ export default function Register() {
                         </p>
                     )}
 
-                    <Button type="submit">
-                        Register
+                    <Button type="submit" disabled={loading}>
+                        {loading ? (
+                            <div className="flex items-center justify-center">
+                                <div className="spinner"></div>
+                                <span className="ml-2">Loading...</span>
+                            </div>
+                        ) : (
+                            'Register'
+                        )}
                     </Button>
 
                     <div className="text-center">

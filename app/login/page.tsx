@@ -9,6 +9,7 @@ export default function Login() {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -17,6 +18,11 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        setLoading(true);
+        setIsError(false);
+        setResponseMessage('');
+
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -27,21 +33,21 @@ export default function Login() {
 
             if (res.ok) {
                 window.location.href = '/';
+                return;
             }
 
-            if (res.status !== 200) {
-                setIsError(true);
-                const data = await res.json();
-                if (data.status === 401) {
-                    setResponseMessage(data.error);
-                } else {
-                    setResponseMessage(data.error || 'An unexpected error occurred');
-                }
-                return;
+            setIsError(true);
+            const data = await res.json();
+            if (data.status === 401) {
+                setResponseMessage(data.error);
+            } else {
+                setResponseMessage(data.error || 'An unexpected error occurred');
             }
         } catch {
             setIsError(true);
             setResponseMessage('An unexpected error occurred');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -76,8 +82,15 @@ export default function Login() {
                         </p>
                     )}
 
-                    <Button type="submit">
-                        Log in
+                    <Button type="submit" disabled={loading}>
+                        {loading ? (
+                            <div className="flex items-center justify-center">
+                                <div className="spinner"></div>
+                                <span className="ml-2">Loading...</span>
+                            </div>
+                        ) : (
+                            'Log in'
+                        )}
                     </Button>
 
                     <div className="text-center">
