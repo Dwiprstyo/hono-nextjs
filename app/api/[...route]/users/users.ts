@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import { hash, verify } from '../../utils/bcrypt';
 import { ProfileUpdateSchema } from '../../utils/validations';
 import { authMiddleware } from '../../middleware/auth';
+import { z } from 'zod';
 
 const prisma = new PrismaClient();
 const userRoutes = new Hono();
@@ -35,7 +36,7 @@ userRoutes.get('/profile/:id', authMiddleware, async (c) => {
             return c.json({ error: 'User not found' }, 404);
         }
 
-        return c.json({...profile});
+        return c.json({ ...profile });
     } catch {
         return c.json({ error: 'Failed to fetch profile' }, 500);
     }
@@ -115,7 +116,9 @@ userRoutes.put('/profile', authMiddleware, zValidator('json', ProfileUpdateSchem
 
         return c.json(updatedProfile);
     } catch (error) {
-        console.error('Profile update error:', error);
+        if (error instanceof z.ZodError) {
+            return c.json({ error: error.errors }, 400);
+        }
         return c.json({ error: 'Failed to update profile', }, 500);
     }
 });
@@ -238,4 +241,4 @@ userRoutes.get('/profile/:id/following', authMiddleware, async (c) => {
     }
 });
 
-export {userRoutes};
+export { userRoutes };

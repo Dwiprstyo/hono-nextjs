@@ -106,7 +106,7 @@ authRoutes.post('/login', async (c) => {
     if (error instanceof z.ZodError) {
       return c.json({ error: error.errors }, 400);
     }
-    return c.json({ error: 'Login failed' }, 500);
+    return c.json({ error: 'Login failed', message: error }, 500);
   }
 });
 
