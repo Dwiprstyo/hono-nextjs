@@ -45,7 +45,7 @@ postRoutes.put('/:id', authMiddleware, zValidator('json', UpdatePostSchema), asy
         });
 
         return c.json(updatedPost);
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to update post' }, 500);
     }
 });
@@ -55,7 +55,7 @@ postRoutes.delete('/:id', authMiddleware, async (c) => {
         const id = Number(c.req.param('id'));
         await prisma.post.delete({ where: { id } });
         return c.json({ message: 'Post deleted successfully' });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to delete post' }, 500);
     }
 });

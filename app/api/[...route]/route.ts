@@ -31,4 +31,4 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal Server Error' }, 500);
 });
 
-export const GET = handle(app), POST = handle(app);
+export const GET = handle(app), POST = handle(app), PUT = handle(app), DELETE = handle(app);

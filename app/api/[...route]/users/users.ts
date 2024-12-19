@@ -36,7 +36,7 @@ userRoutes.get('/profile/:id', authMiddleware, async (c) => {
         }
 
         return c.json({...profile});
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to fetch profile' }, 500);
     }
 });
@@ -68,7 +68,18 @@ userRoutes.put('/profile', authMiddleware, zValidator('json', ProfileUpdateSchem
         }
 
         // Password update logic
-        const updateData: any = { ...data };
+        type UpdateData = {
+            username?: string;
+            email?: string;
+            password?: string;
+            bio?: string;
+            avatar?: string;
+            currentPassword?: string;
+            confirmNewPassword?: string;
+            newPassword?: string;
+        };
+
+        const updateData: UpdateData = { ...data };
 
         if (data.newPassword) {
             // Verify current password before allowing password change
@@ -105,7 +116,7 @@ userRoutes.put('/profile', authMiddleware, zValidator('json', ProfileUpdateSchem
         return c.json(updatedProfile);
     } catch (error) {
         console.error('Profile update error:', error);
-        return c.json({ error: 'Failed to update profile' }, 500);
+        return c.json({ error: 'Failed to update profile', }, 500);
     }
 });
 
@@ -142,7 +153,7 @@ userRoutes.get('/profile/:id/posts', authMiddleware, async (c) => {
                 totalPosts
             }
         });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to fetch user posts' }, 500);
     }
 });
@@ -182,7 +193,7 @@ userRoutes.get('/profile/:id/followers', authMiddleware, async (c) => {
                 totalFollowers
             }
         });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to fetch followers' }, 500);
     }
 });
@@ -222,7 +233,7 @@ userRoutes.get('/profile/:id/following', authMiddleware, async (c) => {
                 totalFollowing
             }
         });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to fetch following' }, 500);
     }
 });

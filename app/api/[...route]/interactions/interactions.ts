@@ -42,7 +42,7 @@ interactionRoutes.post('/likes', authMiddleware, zValidator('json', LikeSchema),
             }
         });
         return c.json(newLike, 201);
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to like post' }, 500);
     }
 });
@@ -62,7 +62,7 @@ interactionRoutes.delete('/likes/:userId/:postId', authMiddleware, async (c) => 
         });
 
         return c.json({ message: 'Like removed successfully' });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to remove like' }, 500);
     }
 });
@@ -73,7 +73,7 @@ interactionRoutes.post('/comments', authMiddleware, zValidator('json', CommentSc
         const data = c.req.valid('json');
         const newComment = await prisma.comment.create({ data });
         return c.json(newComment, 201);
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to create comment' }, 500);
     }
 });
@@ -89,7 +89,7 @@ interactionRoutes.put('/comments/:id', authMiddleware, zValidator('json', Update
         });
 
         return c.json(updatedComment);
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to update comment' }, 500);
     }
 });
@@ -99,7 +99,7 @@ interactionRoutes.delete('/comments/:id', authMiddleware, async (c) => {
         const id = Number(c.req.param('id'));
         await prisma.comment.delete({ where: { id } });
         return c.json({ message: 'Comment deleted successfully' });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to delete comment' }, 500);
     }
 });
@@ -128,7 +128,7 @@ interactionRoutes.post('/follow', authMiddleware, zValidator('json', FollowSchem
 
         const newFollow = await prisma.follow.create({ data: { ...data, createdAt: adjustedTime } });
         return c.json(newFollow, 201);
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to follow user' }, 500);
     }
 });
@@ -148,7 +148,7 @@ interactionRoutes.delete('/unfollow/:followerId/:followingId', authMiddleware, a
         });
 
         return c.json({ message: 'Unfollowed successfully' });
-    } catch (error) {
+    } catch {
         return c.json({ error: 'Failed to unfollow' }, 500);
     }
 });

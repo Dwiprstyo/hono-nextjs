@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 interface CustomVariables {
   userId: number;
-  [key: string]: any;
 }
 type CustomContext = Context<{ Variables: CustomVariables }>;
 
