@@ -5,6 +5,7 @@ import { generateToken } from '../../utils/jwt';
 import { hash, verify } from '../../utils/bcrypt';
 import { RegisterUserSchema, LoginUserSchema } from '../../utils/validations';
 import { addHours } from 'date-fns';
+import { setCookie, deleteCookie } from 'hono/cookie';
 
 const authRoutes = new Hono();
 const prisma = new PrismaClient();
@@ -69,13 +70,18 @@ authRoutes.post('/login', async (c) => {
     const body = await c.req.json();
     const validatedData = LoginUserSchema.parse(body);
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email: validatedData.email }
+    // Find user by email or username
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: validatedData.email },
+          { username: validatedData.email }
+        ]
+      }
     });
 
     if (!user) {
-      return c.json({ error: 'Invalid credentials' }, 401);
+      return c.json({ error: 'User Not Found' }, 401);
     }
 
     // Verify password
@@ -85,7 +91,7 @@ authRoutes.post('/login', async (c) => {
     );
 
     if (!isPasswordValid) {
-      return c.json({ error: 'Invalid credentials' }, 401);
+      return c.json({ error: 'Wrong Password' }, 401);
     }
 
     // Generate JWT token
@@ -94,13 +100,20 @@ authRoutes.post('/login', async (c) => {
       email: user.email
     });
 
+    setCookie(c, 'access-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
     return c.json({
       user: {
         id: user.id,
         username: user.username,
         email: user.email
-      },
-      token
+      }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -109,5 +122,13 @@ authRoutes.post('/login', async (c) => {
     return c.json({ error: 'Login failed', message: error }, 500);
   }
 });
+
+authRoutes.get('/logout', (c) => {
+  deleteCookie(c, 'access-token', { path: '/' });
+
+  c.redirect('/login');
+  return c.body('');
+});
+
 
 export { authRoutes };

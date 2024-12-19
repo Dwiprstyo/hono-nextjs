@@ -9,9 +9,17 @@ export const RegisterUserSchema = z.object({
 });
 
 export const LoginUserSchema = z.object({
-  email: z.string().email(),
+  email: z.string().refine(
+    (value) => {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      const isUsername = /^[a-zA-Z0-9_.-]{3,20}$/.test(value);
+      return isEmail || isUsername;
+    },
+    { message: 'Must be a valid email or username' }
+  ),
   password: z.string().min(6).max(100)
 });
+
 
 export const PostSchema = z.object({
   content: z.string().min(1, { message: "Content is required" }).max(500, { message: "Content must be 500 characters or less" }),

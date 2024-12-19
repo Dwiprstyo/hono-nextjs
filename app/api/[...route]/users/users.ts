@@ -10,9 +10,10 @@ const prisma = new PrismaClient();
 const userRoutes = new Hono();
 
 // Get User Profile
-userRoutes.get('/profile/:id', authMiddleware, async (c) => {
+userRoutes.get('/profile/:id?', authMiddleware, async (c) => {
     try {
-        const userId = Number(c.req.param('id'));
+        const paramId = c.req.param('id');
+        const userId = paramId ? parseInt(paramId, 10) : c.get('userId');
 
         const profile = await prisma.user.findUnique({
             where: { id: userId },
