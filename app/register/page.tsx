@@ -46,7 +46,7 @@ export default function Register() {
             }
 
             router.push('/login');
-        } catch (error) {
+        } catch {
             setIsError(true);
             setResponseMessage('An unexpected error occurred');
         }

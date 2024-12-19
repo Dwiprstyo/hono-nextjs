@@ -39,7 +39,7 @@ export default function Login() {
                 }
                 return;
             }
-        } catch (error) {
+        } catch {
             setIsError(true);
             setResponseMessage('An unexpected error occurred');
         }
