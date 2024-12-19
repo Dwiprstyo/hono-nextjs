@@ -13,7 +13,7 @@ npm i
 1. Create a `.env` file with:
 ```
 BASE_URL=http://localhost:3000
-DATABASE_URL="postgresql://username:password@localhost:5432/socialmedia"
+DATABASE_URL="postgresql://username:password@localhost:5432/db"
 JWT_SECRET="your-secret-key"
 ```
 
