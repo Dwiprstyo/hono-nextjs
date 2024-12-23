@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getAccessToken } from './utils/getAccessToken';
+import { getAccessToken } from './api/utils/getAccessToken';
 import LogoutButton from './components/LogoutButton';
 
 async function getData() {

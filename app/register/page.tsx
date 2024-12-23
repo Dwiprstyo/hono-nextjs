@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Input from '../components/ui/input';
 import Button from '../components/ui/button';
 import Link from 'next/link';
 
 export default function Register() {
+    const router = useRouter();
     const [formData, setFormData] = useState({ email: '', username: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
@@ -37,7 +39,7 @@ export default function Register() {
             });
 
             if (res.ok) {
-                window.location.href = '/login';
+                router.push('/login');
                 return;
             }
 

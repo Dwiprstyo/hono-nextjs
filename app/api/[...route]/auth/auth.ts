@@ -54,8 +54,7 @@ authRoutes.post('/register', async (c) => {
         id: user.id,
         username: user.username,
         email: user.email
-      },
-      token
+      }
     }, 201);
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Input from '../components/ui/input';
 import Button from '../components/ui/button';
 import Link from 'next/link';
 
 export default function Login() {
+    const router = useRouter();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
@@ -32,7 +34,7 @@ export default function Login() {
             });
 
             if (res.ok) {
-                window.location.href = '/';
+                router.push('/');
                 return;
             }
 
