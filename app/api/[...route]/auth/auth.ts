@@ -43,12 +43,6 @@ authRoutes.post('/register', async (c) => {
       }
     });
 
-    // Generate JWT token
-    const token = await generateToken({
-      userId: user.id,
-      email: user.email
-    });
-
     return c.json({
       user: {
         id: user.id,
