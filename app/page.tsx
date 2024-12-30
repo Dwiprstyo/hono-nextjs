@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getAccessToken } from './api/utils/getAccessToken';
 import LogoutButton from './components/LogoutButton';
+import DonutScene from "./components/Scene/DonutScene";
 
 async function getData() {
   const accessToken = await getAccessToken();
@@ -31,13 +32,18 @@ export default async function Home() {
   if (!data) {
     redirect('/login');
   }
-
   return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <p>Hello to {data.username}! 👋</p>
-        <LogoutButton/>
+    <div className="relative min-h-screen">
+      {/* Logout Button */}
+      <div className="absolute top-4 right-4 z-50">
+        <LogoutButton />
       </div>
-    </>
-  )
+
+      {/* Donut Scene */}
+      <div className="absolute inset-0">
+        <DonutScene name={data.username} />
+      </div>
+    </div>
+  );
+
 }
