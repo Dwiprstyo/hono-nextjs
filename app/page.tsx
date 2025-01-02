@@ -7,7 +7,7 @@ import Loading from './components/ui/Loading';
 
 async function ProfileContent() {
   const data = await getData();
-  
+
   if (!data) {
     redirect('/login');
   }
@@ -29,26 +29,25 @@ async function getData() {
   if (!accessToken) {
     return null;
   }
-  
+
   const res = await fetch(`${process.env.BASE_URL}/api/users/profile`, {
     cache: 'no-store',
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to fetch data');
   }
-  
+
   return res.json();
 }
 
 export default function Home() {
   return (
-    <Loading/>
-    // <Suspense fallback={<Loading />}>
-    //   <ProfileContent />
-    // </Suspense>
+    <Suspense fallback={<Loading />}>
+      <ProfileContent />
+    </Suspense>
   );
 }
