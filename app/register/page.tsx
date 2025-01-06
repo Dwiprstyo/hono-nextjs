@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function Register() {
     const router = useRouter();
-    const [formData, setFormData] = useState({ email: '', username: '', password: '' });
+    const [formData, setFormData] = useState({ name: '', username: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -62,10 +62,10 @@ export default function Register() {
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
+                        type="name"
+                        name="name"
+                        placeholder="Name"
+                        value={formData.name}
                         onChange={handleChange}
                         required
                     />
