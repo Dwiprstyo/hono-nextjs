@@ -1,4 +1,4 @@
-import {Post, User} from "@prisma/client";
+import {Post} from "@prisma/client";
 
 export type GetPostRequest = {
     id?: number,
@@ -24,6 +24,15 @@ export type PostResponse = {
     content: string;
     image?: string | null;
     user_id: number;
+}
+
+export type PaginatedResponse<T> = {
+    data: T[];
+    paging: {
+        current_page: number;
+        size: number;
+        total_page: number;
+    };
 }
 
 export function toPostResponse(post: Post): PostResponse {

@@ -3,16 +3,16 @@ import {
     GetPostRequest,
     UpdatePostRequest,
     toPostResponse,
-    PostResponse
+    PostResponse,
+    PaginatedResponse
 } from "../model/post-model";
 import { PostValidation } from "../validation/post-validations";
 import { prismaClient } from "../utils/database";
 import { HTTPException } from "hono/http-exception";
-import { Post } from "@prisma/client";
 
 export class PostService {
 
-    static async get(request: GetPostRequest): Promise<any> {
+    static async get(request: GetPostRequest): Promise<PostResponse | PaginatedResponse<PostResponse>> {
         const result = PostValidation.GET.parse(request)
 
         if (result.id) {
@@ -26,12 +26,10 @@ export class PostService {
                 })
             }
 
-            return {
-                data: toPostResponse(post)
-            }
+            return toPostResponse(post);
         }
 
-        const where: any = {}
+        const where: { user_id?: number } = {};
         if (result.user_id) {
             where.user_id = result.user_id
         }

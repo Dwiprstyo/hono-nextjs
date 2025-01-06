@@ -21,9 +21,15 @@ userController.post('/register', async (c) => {
 userController.post('/login', async (c) => {
     const request = await c.req.json() as LoginUserRequest;
 
-    const response = await UserService.login(request)
+    const response = await UserService.login(request);
 
-    setCookie(c, 'access-token-1', response?.token!, {
+    if (!response || !response.token) {
+        return c.json({
+            error: 'Authentication failed.',
+        }, 401);
+    }
+
+    setCookie(c, 'access-token-1', response.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
@@ -31,12 +37,13 @@ userController.post('/login', async (c) => {
         maxAge: 7 * 24 * 60 * 60,
     });
 
-    const { token, ...responseWithoutToken } = response;
+    delete response.token;
 
     return c.json({
-        data: responseWithoutToken,
+        data: response,
     });
-})
+});
+
 
 userController.use(authMiddleware)
 
