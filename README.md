@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) and [Hono.js](https://hono.dev/docs/getting-started/vercel).
+This is a [Next.js](https://nextjs.org) and [Hono.js](https://hono.dev/docs/getting-started/vercel) Deploy in [Vercel](https://vercel.com).
+
+[Website](hono-with-nextjs.vercel.app)
 
 ## Setup
 1. Clone the repository
@@ -45,4 +47,5 @@ npm run dev
 - Prisma ORM
 - PostgreSQL
 - Zod Validation
-- Bun Runtime
+- Node Runtime
+- Vercel

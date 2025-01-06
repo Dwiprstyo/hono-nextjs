@@ -8,62 +8,33 @@ generator client {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique
-  email     String    @unique
-  password  String
-  bio       String?
-  avatar    String?
-  followers Follow[]  @relation("UserFollowers")
-  following Follow[]  @relation("UserFollowing")
-  posts     Post[]
-  likes     Like[]
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Follow {
-  id          Int      @id @default(autoincrement())
-  follower    User     @relation("UserFollowing", fields: [followerId], references: [id])
-  followerId  Int
-  following   User     @relation("UserFollowers", fields: [followingId], references: [id])
-  followingId Int
-  createdAt   DateTime @default(now())
-
-  @@unique([followerId, followingId])
+  id         Int      @id @default(autoincrement())
+  name       String
+  username   String   @unique
+  email      String?  @unique
+  password   String
+  avatar     String?  @default("https://cdn.vectorstock.com/i/1000v/66/13/default-avatar-profile-icon-social-media-user-vector-49816613.jpg")
+  posts      Post[]
+  created_at DateTime @default(dbgenerated("TIMEZONE('Asia/Jakarta', NOW())"))
+  updated_at DateTime @updatedAt
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  content   String
-  image     String?
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  likes     Like[]
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Like {
-  id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
-  createdAt DateTime  @default(now())
-
-  @@unique([userId, postId])
+  id         Int       @id @default(autoincrement())
+  content    String
+  image      String?
+  user       User      @relation(fields: [user_id], references: [id])
+  user_id    Int
+  comments   Comment[]
+  created_at DateTime  @default(dbgenerated("TIMEZONE('Asia/Jakarta', NOW())"))
+  updated_at DateTime  @updatedAt
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  content   String
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         Int      @id @default(autoincrement())
+  content    String
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id    Int
+  created_at DateTime @default(dbgenerated("TIMEZONE('Asia/Jakarta', NOW())"))
+  updated_at DateTime @updatedAt
 }

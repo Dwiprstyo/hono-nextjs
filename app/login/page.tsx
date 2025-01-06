@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function Login() {
     const router = useRouter();
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [responseMessage, setResponseMessage] = useState('');
     const [isError, setIsError] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export default function Login() {
         setResponseMessage('');
 
         try {
-            const res = await fetch('/api/auth/login', {
+            const res = await fetch('/api/users/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -62,9 +62,9 @@ export default function Login() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
                         type="text"
-                        name="email"
-                        placeholder="Email or Username"
-                        value={formData.email}
+                        name="username"
+                        placeholder="Username"
+                        value={formData.username}
                         onChange={handleChange}
                         required
                     />

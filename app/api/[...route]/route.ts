@@ -1,17 +1,11 @@
 import { Hono } from 'hono'
-import { cors } from 'hono/cors';
+import { HTTPException } from "hono/http-exception";
+import { ZodError } from "zod";
 import { handle } from 'hono/vercel'
-import { authRoutes } from './auth/auth';
-import { postRoutes } from './posts/posts';
-import { interactionRoutes } from './interactions/interactions';
-import { userRoutes } from './users/users';
-
-export const runtime = 'nodejs'
+import { userController } from '../controller/user-controller';
+import { postController } from '../controller/post-controller';
 
 const app = new Hono().basePath('/api')
-
-// Middleware
-app.use('*', cors());
 
 app.get('/hello', (c) => {
   return c.json({
@@ -20,15 +14,27 @@ app.get('/hello', (c) => {
 })
 
 // Route groups
-app.route('/auth', authRoutes);
-app.route('/posts', postRoutes);
-app.route('/users', userRoutes);
-app.route('/interactions', interactionRoutes);
+app.route('/posts', postController);
+app.route('/users', userController);
 
 // Error handling
-app.onError((err, c) => {
-  console.error(`${err}`);
-  return c.json({ error: 'Internal Server Error' }, 500);
-});
+app.onError(async (err, c) => {
+  if (err instanceof HTTPException) {
+    c.status(err.status)
+    return c.json({
+      errors: err.message
+    })
+  } else if (err instanceof ZodError) {
+    c.status(400)
+    return c.json({
+      errors: err.message
+    })
+  } else {
+    c.status(500)
+    return c.json({
+      errors: err.message
+    })
+  }
+})
 
-export const GET = handle(app), POST = handle(app), PUT = handle(app), DELETE = handle(app);
+export const GET = handle(app), POST = handle(app), PATCH = handle(app), DELETE = handle(app);

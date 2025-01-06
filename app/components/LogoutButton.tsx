@@ -2,11 +2,15 @@
 
 import React from 'react';
 
-const LogoutButton = () => {
+const LogoutButton: React.FC<{ accessToken: string }> = ({ accessToken }) => {
     const handleLogout = async () => {
         try {
-            const response = await fetch('/api/auth/logout', {
-                method: 'GET',
+            const response = await fetch('/api/users/profiles', {
+                method: 'DELETE',
+                cache: 'no-store',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
             });
 
             if (response.ok) {

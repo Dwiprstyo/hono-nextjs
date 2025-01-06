@@ -1,21 +1,36 @@
 import { sign, verify } from 'hono/jwt';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || '';
+const TOKEN_EXPIRATION = 7 * 24 * 60 * 60;
 
-// Add index signature to make it compatible with Hono's JWTPayload
 export interface JwtPayload {
-  userId: number;
-  email: string;
-  [key: string]: string | number | boolean | null; // Add index signature
+  user_id: number;
+  exp?: number;
+  iat?: number;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export const generateToken = async (payload: JwtPayload) => {
-  return await sign(payload, JWT_SECRET, 'HS256');
+  const timestamp = Math.floor(Date.now() / 1000);
+  const tokenPayload: JwtPayload = {
+    ...payload,
+    iat: timestamp,
+    exp: timestamp + TOKEN_EXPIRATION
+  };
+  
+  return await sign(tokenPayload, JWT_SECRET, 'HS256');
 };
 
 export const verifyToken = async (token: string): Promise<JwtPayload | null> => {
   try {
-    return await verify(token, JWT_SECRET) as JwtPayload;
+    const payload = await verify(token, JWT_SECRET) as JwtPayload;
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (payload.exp && currentTime > payload.exp) {
+      return null;
+    }
+    
+    return payload;
   } catch {
     return null;
   }
