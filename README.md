@@ -1,6 +1,6 @@
 This is a [Next.js](https://nextjs.org) and [Hono.js](https://hono.dev/docs/getting-started/vercel) Deploy in [Vercel](https://vercel.com).
 
-[Website](hono-with-nextjs.vercel.app)
+[Website](https://hono-with-nextjs.vercel.app)
 
 ## Setup
 1. Clone the repository
