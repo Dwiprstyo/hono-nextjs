@@ -4,9 +4,19 @@ import { UserService } from "../service/user-service";
 import { ApplicationVariables } from "../model/app-model";
 import { User } from "@prisma/client";
 import { authMiddleware } from "../middleware/auth-middleware";
-import { setCookie, deleteCookie } from 'hono/cookie';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 
 export const userController = new Hono<{ Variables: ApplicationVariables }>();
+
+userController.get('/token', async (c) => {
+    const HonoCookie = getCookie(c, 'hono_session')
+    if (!HonoCookie) {
+        return c.json({
+            error: 'Authentication failed.',
+        }, 401);
+    }
+    return c.json({ HonoCookie })
+})
 
 userController.post('/register', async (c) => {
     const request = await c.req.json() as RegisterUserRequest;
@@ -14,7 +24,7 @@ userController.post('/register', async (c) => {
     const response = await UserService.register(request)
 
     return c.json({
-        data: response 
+        data: response
     })
 })
 
@@ -29,7 +39,7 @@ userController.post('/login', async (c) => {
         }, 401);
     }
 
-    setCookie(c, 'access-token-1', response.token, {
+    setCookie(c, 'hono_session', response.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
@@ -67,7 +77,7 @@ userController.patch('/profiles', async (c) => {
 })
 
 userController.delete('/profiles', async (c) => {
-    deleteCookie(c, 'access-token-1', { path: '/' });
+    deleteCookie(c, 'hono_session', { path: '/' });
 
     return c.json({
         data: true

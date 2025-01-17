@@ -14,7 +14,7 @@ const LogoutButton: React.FC<{ accessToken: string }> = ({ accessToken }) => {
             });
 
             if (response.ok) {
-                window.location.href = '/login';
+                window.location.href = '/admin/login';
             } else {
                 console.error('Failed to log out');
             }

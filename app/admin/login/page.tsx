@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Input from '../components/ui/input';
-import Button from '../components/ui/button';
+import Input from '../../components/ui/input';
+import Button from '../../components/ui/button';
 import Link from 'next/link';
 
 export default function Login() {
@@ -96,7 +96,7 @@ export default function Login() {
                     </Button>
 
                     <div className="text-center">
-                        <Link href="/register" className="text-gray-500 hover:text-gray-400 text-sm">
+                        <Link href="/admin/register" className="text-gray-500 hover:text-gray-400 text-sm">
                             Register?
                         </Link>
                     </div>

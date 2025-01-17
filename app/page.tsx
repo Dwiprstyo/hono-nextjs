@@ -1,55 +1,83 @@
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import { getAccessToken } from './api/utils/access-token';
-import LogoutButton from './components/LogoutButton';
+'use client';
 import DonutScene from "./components/Scene/DonutScene";
-import Loading from './components/ui/Loading';
+import styles from './style/page.module.css'
+import { useRef, useEffect } from 'react'
 
-async function ProfileContent() {
-  const { accessToken, response } = await getData() || {};
-  const data = response?.data;
-
-  if (!data) {
-    redirect('/login');
-  }
-
-  return (
-    <div className="relative min-h-screen">
-      <div className="absolute top-4 right-4 z-50">
-        <LogoutButton accessToken={accessToken || ''}/>
-      </div>
-      <div className="absolute inset-0">
-        <DonutScene name={data.name} />
-      </div>
-    </div>
-  );
+interface ProfileContentProps {
+    loader: React.RefObject<HTMLDivElement | null>;
+    path: React.RefObject<SVGPathElement | null>;
 }
 
-async function getData() {
-  const accessToken = await getAccessToken();
-  if (!accessToken) {
-    return null;
-  }
-
-  const res = await fetch(`${process.env.BASE_URL}/api/users/profiles`, {
-    cache: 'no-store',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
-  }
-
-  const response = await res.json();
-  return { accessToken, response };
+function ProfileContent({ loader, path }: ProfileContentProps) {
+    return (
+        <main className={styles.main}>
+            <div className={styles.body}>
+                <DonutScene name={'Hello World !!'} />
+            </div>
+            <div ref={loader} className={`${styles.loader} z-10`}>
+                <svg>
+                    <path ref={path} fill="white"></path>
+                </svg>
+            </div>
+        </main>
+    );
 }
 
 export default function Home() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ProfileContent />
-    </Suspense>
-  );
+    const loader = useRef<HTMLDivElement | null>(null);
+    const path = useRef<SVGPathElement | null>(null);
+
+    const initialCurve = 300;
+    const duration = 1000;
+    let start: number;
+
+    useEffect(() => {
+        setPath(initialCurve)
+        setTimeout(() => {
+            requestAnimationFrame(animate)
+        },)
+    }, [])
+
+    const animate = (timestamp: number) => {
+        if (start === undefined) {
+            start = timestamp;
+        }
+        const elapsed = timestamp - start;
+        const currentCurve = easeOutQuad(elapsed, initialCurve, -initialCurve, duration);
+        setPath(Math.max(currentCurve, 0));
+        if (loader.current) {
+            loader.current.style.top =
+                easeOutQuad(elapsed, 0, -loaderHeight(), duration) + "px";
+        }
+        if (elapsed < duration) {
+            requestAnimationFrame(animate);
+        }
+    };
+
+    const easeOutQuad = (time: number, start: number, end: number, duration: number) => {
+        return -end * (time /= duration) * (time - 2) + start;
+    }
+
+    const loaderHeight = (): number => {
+        const loaderBounds = loader.current?.getBoundingClientRect();
+        return loaderBounds?.height || 0;
+    }
+
+    const setPath = (curve: number) => {
+        const width = window.innerWidth
+        const height = loaderHeight();
+        path.current?.setAttributeNS(null, "d",
+            `M0 0
+            L${width} 0
+            L${width} ${height}
+            Q${width / 2} ${height - curve} 0 ${height}
+            L0 0`
+        )
+    }
+
+    return (
+        <>
+            <ProfileContent loader={loader} path={path} />
+        </>
+    );
 }

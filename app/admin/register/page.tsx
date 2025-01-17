@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Input from '../components/ui/input';
-import Button from '../components/ui/button';
+import Input from '../..//components/ui/input';
+import Button from '../../components/ui/button';
 import Link from 'next/link';
 
 export default function Register() {
@@ -39,7 +39,7 @@ export default function Register() {
             });
 
             if (res.ok) {
-                router.push('/login');
+                router.push('/admin/login');
                 return;
             }
 
@@ -106,7 +106,7 @@ export default function Register() {
                     </Button>
 
                     <div className="text-center">
-                        <Link href="/login" className="text-gray-500 hover:text-gray-400 text-sm">
+                        <Link href="/admin/login" className="text-gray-500 hover:text-gray-400 text-sm">
                             Already have an account?
                         </Link>
                     </div>
